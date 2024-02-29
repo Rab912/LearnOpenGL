@@ -7,6 +7,8 @@
 
 #include "Shader.h"
 
+float mixValue = 1.0f;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -16,8 +18,21 @@ void process_input(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
 
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        mixValue += 1E-4;
+        if (mixValue >= 1.0f)
+            mixValue = 1.0f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+        mixValue -= 1E-4;
+        if (mixValue <= 0.0f)
+            mixValue = 0.0f;
+    }
+}
 int main()
 {
     // === Initialize GLFW ===
@@ -62,10 +77,10 @@ int main()
 
     float vertices[] = {
         // Positions       // Colors         // Texture coordinates
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // Top right
+        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 2.0f, 1.0f,   // Top right
         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // Bottom right
-       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,   // Bottom left
-       -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f    // Top left
+       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f,   // Bottom left
+       -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f    // Top left
     };
 
     unsigned int indices[] = {
@@ -183,6 +198,8 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
+        shader.setFloat("mixValue", mixValue);
+        //std::cout << mixValue << std::endl;
         shader.use();
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
