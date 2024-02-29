@@ -132,15 +132,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\vendor\glad.c" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\fragment.shd" />
-    <None Include="src\shaders\vertex.shd" />
+    <None Include="src\shaders\Fragment.shd" />
+    <None Include="src\shaders\Vertex.shd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\awesomeface.png" />
+    <Image Include="res\container.jpg" />
+    <Image Include="res\groyper2.png" />
+    <Image Include="res\impjak.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
