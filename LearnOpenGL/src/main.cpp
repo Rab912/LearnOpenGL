@@ -5,6 +5,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -108,10 +112,10 @@ int main()
 
     // === Loading textures ===
 
-    // Container Texture
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    // Groyper texture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -120,33 +124,7 @@ int main()
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("res/container.jpg", &width, &height, &nrChannels, 0);
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    else
-    {
-        std::cout << "Failed to load texture1" << std::endl;
-        return -1;
-    }
-
-    stbi_image_free(data);
-
-    // Groyper texture
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    data = stbi_load("res/groyper2.png", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("res/groyper2.png", &width, &height, &nrChannels, 0);
 
     if (data)
     {
@@ -156,15 +134,16 @@ int main()
 
     else
     {
-        std::cout << "Failed to load texture2" << std::endl;
+        std::cout << "Failed to load texture" << std::endl;
         return -1;
     }
 
     stbi_image_free(data);
 
     shader.use();
-    shader.setInt("tex1", 0);
-    shader.setInt("tex2", 1);
+    shader.setInt("tex", 0);
+
+    glm::mat4 transform(1.0f);
 
     // Wireframe mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -179,11 +158,22 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, texture);
 
-        shader.use();
+        float t = 5.0f * (float)glfwGetTime();
+
+        float w1 = 0.5f * sin(t) + 2.0f;
+        float w2 = 0.5f * sin(t + 2.094f) + 1.0f;
+        float w3 = 0.5f * sin(t + 4.189f) + 2.0f;
+
+        shader.setFloat("w1", w1);
+        shader.setFloat("w2", w2);
+        shader.setFloat("w3", w3);
+
+        // Transformation for one image (angular acceleration)
+        transform = glm::rotate(transform, glm::radians(sin(0.1f * t)), glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.setMat4("transform", transform);
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
