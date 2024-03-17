@@ -2,7 +2,6 @@
 
 out vec4 fragColor;
 
-in vec3 vertexColor;
 in vec2 texCoord;
 
 uniform sampler2D tex;
@@ -12,5 +11,5 @@ uniform float w3;
 
 void main()
 {
-    fragColor = texture(tex, texCoord) * vec4(w1 * vertexColor.z, w2 * vertexColor.y, w3 * vertexColor.x, 1.0);
+    fragColor = texture(tex, texCoord) * vec4(w1, w2, w3, 1.0);
 }
