@@ -11,23 +11,20 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "Camera.h"
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+const int VP_WIDTH = 800;
+const int VP_HEIGHT = 600;
 
-float dt = 0.0f;
+float timeStep = 0.0f;
 float lastFrame = 0.0f;
-
-float yaw = -90.0f;
-float pitch = 0.0f;
 
 float lastx = 400;
 float lasty = 300;
 
-float fov = 45.0f;
-
 bool firstMouse = true;
+
+Camera camera(45.0f, (float)VP_WIDTH / (float)VP_HEIGHT, 0.1f, 100.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -36,73 +33,55 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void process_input(GLFWwindow* window)
 {
-    float currentFrame = glfwGetTime();
-    dt = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-
-    float cameraSpeed = 5.0f * dt;
-
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
+        camera.processKeyboardInput(CameraMotion::FORWARD, timeStep);
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        camera.processKeyboardInput(CameraMotion::LEFT, timeStep);
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.processKeyboardInput(CameraMotion::BACKWARD, timeStep);
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        camera.processKeyboardInput(CameraMotion::RIGHT, timeStep);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraUp;
+        camera.processKeyboardInput(CameraMotion::UP, timeStep);
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraUp;
+        camera.processKeyboardInput(CameraMotion::DOWN, timeStep);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 {
     if (firstMouse)
     {
-        lastx = xpos;
-        lasty = ypos;
+        lastx = xPos;
+        lasty = yPos;
 
         firstMouse = false;
     }
 
-    float xoffs = (float)xpos - lastx;
-    float yoffs = (float)ypos - lasty;
+    float xoffs = (float)xPos - lastx;
+    float yoffs = (float)yPos - lasty;
 
-    lastx = (float)xpos;
-    lasty = (float)ypos;
+    lastx = (float)xPos;
+    lasty = (float)yPos;
 
     const float sensitivity = 0.1f;
 
     xoffs *= sensitivity;
     yoffs *= sensitivity;
 
-    yaw += xoffs;
-    pitch += yoffs;
-
-    pitch = std::clamp(pitch, -89.9f, 89.9f);
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = -sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-    cameraFront = glm::normalize(direction);
+    camera.processMouseMovementInput((float)xoffs, (float)yoffs);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    fov -= (float)yoffset;
-    
-    fov = std::clamp(fov, 1.0f, 45.0f);
+    camera.processMouseScrollInput((float)yoffset);
 }
 
 int main()
@@ -121,7 +100,7 @@ int main()
 
     // === Create window ===
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(VP_WIDTH, VP_HEIGHT, "LearnOpenGL", nullptr, nullptr);
 
     if (!window)
     {
@@ -277,6 +256,10 @@ int main()
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = (float)glfwGetTime();
+        timeStep = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         process_input(window);
 
         // Clear the screen after each frame
@@ -286,26 +269,15 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
 
-        float t = 5.0f * (float)glfwGetTime();
+        float t = 5.0f * currentFrame;
 
         // Adding color waves to the image
         shader.setFloat("w1", 1.0f * sin(t) + 1.0f);
         shader.setFloat("w2", 1.0f * sin(t + 2.094f) + 1.0f);
         shader.setFloat("w3", 1.0f * sin(t + 4.189f) + 1.0f);
 
-        // Model, view, and projection matrices
-        glm::mat4 projection;
-        glm::mat4 view(1.0f);
-
-        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
-
-        float rad = 10.0f;
-        float camx = rad * sin(t);
-        float camz = rad * cos(t);
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
+        shader.setMat4("projection", camera.getProjection());
+        shader.setMat4("view", camera.getView());
 
         glBindVertexArray(vao);
 
