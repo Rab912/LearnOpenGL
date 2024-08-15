@@ -24,6 +24,15 @@
     <ClCompile Include="src\vendor\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Shader.h">
@@ -905,10 +914,13 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\Fragment.shd" />
-    <None Include="src\shaders\Vertex.shd" />
+    <None Include="src\shaders\Fragment_test.shd" />
+    <None Include="src\shaders\Vertex_test.shd" />
     <None Include="src\vendor\glm\detail\func_common.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -1323,6 +1335,10 @@
     <None Include="src\vendor\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\shaders\Vertex_cube.shd" />
+    <None Include="src\shaders\Fragment_cube.shd" />
+    <None Include="src\shaders\Fragment_light.shd" />
+    <None Include="src\shaders\Vertex_light.shd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\container.jpg">
