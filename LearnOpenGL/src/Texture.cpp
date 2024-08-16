@@ -18,25 +18,45 @@ Texture::Texture(const char* texturePath)
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("res/groyper2.png", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        GLenum format;
+        switch (nrChannels)
+        {
+        case 1:
+            format = GL_RED;
+            break;
+        case 3:
+            format = GL_RGB;
+            break;
+        case 4:
+            format = GL_RGBA;
+            break;
+        default:
+            format = GL_RGBA;
+            break;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     else
     {
         std::cout << "Failed to load texture" << std::endl;
-        return;
     }
 
     stbi_image_free(data);
+    return;
 }
 
 void Texture::Bind(unsigned int slot)
 {
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_2D, m_id);
+    if (slot < 32)
+    {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, m_id);
+    }
 }
