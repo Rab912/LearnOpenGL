@@ -5,21 +5,19 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 
 out vec3 fragPosView;
-out vec3 normal;
+out vec3 normalView;
 out vec2 texCoord;
-out vec3 lightPosView;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 normalMatrixView;
-uniform vec3 lightPos;
 
 void main()
 {
     fragPosView = vec3(view * model * vec4(aPos, 1.0));
-    normal = vec3(normalMatrixView * vec4(aNormal, 0.0));
+    normalView = vec3(normalMatrixView * vec4(aNormal, 0.0));
     texCoord = aTexCoord;
-    lightPosView = vec3(view * vec4(lightPos, 1.0));
+
     gl_Position = projection * vec4(fragPosView, 1.0);
 }
