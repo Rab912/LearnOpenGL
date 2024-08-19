@@ -30,7 +30,10 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -914,7 +917,10 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Texture.h">
+    <ClInclude Include="src\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1339,6 +1345,9 @@
     <None Include="src\shaders\Fragment_cube.shd" />
     <None Include="src\shaders\Fragment_light.shd" />
     <None Include="src\shaders\Vertex_light.shd" />
+    <None Include="src\shaders\Fragment_model.shd" />
+    <None Include="src\shaders\Vertex_model.shd" />
+    <None Include="res\backpack\backpack.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\container.jpg">
@@ -1362,5 +1371,23 @@
     <Image Include="res\matrix.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\backpack\ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backpack\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backpack\roughness.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\backpack\source_attribution.txt" />
   </ItemGroup>
 </Project>
